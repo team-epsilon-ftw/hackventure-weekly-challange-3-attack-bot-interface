@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TensorFlow.js Inference Example</title>
+    <!-- Load TensorFlow.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+  </head>
+  <body>
+    <h1>TensorFlow.js Inference Example</h1>
+    <div>
+      <label for="input">Input Data (comma-separated numbers):</label>
+      <input type="text" id="input" />
+      <button onclick="runPrediction()">Predict</button>
+    </div>
+    <div>
+      <h3>Prediction Output:</h3>
+      <p id="output"></p>
+    </div>
+
+    <script>
+      async function loadModel() {
+        const model = await tf.loadLayersModel("keras-ann-model.keras");
+        return model;
+      }
+
+      function prepareInput(inputData) {
+        const inputArray = inputData.split(",").map(Number);
+        const inputTensor = tf.tensor2d([inputArray], [1, inputArray.length]);
+        return inputTensor;
+      }
+
+      async function predict(model, inputData) {
+        const inputTensor = prepareInput(inputData);
+        const prediction = model.predict(inputTensor);
+        const output = await prediction.data();
+        return output;
+      }
+
+      async function runPrediction() {
+        const inputText = document.getElementById("input").value;
+        const model = await loadModel();
+        const prediction = await predict(model, inputText);
+        document.getElementById(
+          "output"
+        ).innerText = `Prediction: ${prediction}`;
+      }
+    </script>
+  </body>
+</html>
